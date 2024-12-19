@@ -1,23 +1,30 @@
 const express = require("express");
-
+const connectDB = require("./config/database");
 const app = express();
+const User = require("./models/user");
 
-app.listen(7099, () => {
-  console.log("Server is successfully running on port 7099");
+app.post("/signup", async (req, res) => {
+  const user = new User({
+    firstName: "Sachin",
+    lastName: "Ojha",
+  });
+
+  try {
+    await user.save();
+    res.send("User added successfully");
+  } catch (err) {
+    res.status(400).send("Error saving the data ", err.message);
+  }
 });
 
-app.use("/ab+c", (req, res) => {
-  res.send("Test route...");
-});
-
-app.use("/home", (req, res) => {
-  res.send("Home route...");
-});
-
-app.get("/user", (req, res) => {
-  res.send({ "first name": "Ayush" });
-});
-
-app.post("/user", (req, res) => {
-  res.send("Data saved successfully!!");
-});
+connectDB()
+  .then(() => {
+    console.log("Connected to Database successfully.");
+    // start listening to server once database is connected successfully
+    app.listen(7099, () => {
+      console.log("Server is successfully running on port 7099");
+    });
+  })
+  .catch((err) => {
+    console.error("Database connection failed!");
+  });
