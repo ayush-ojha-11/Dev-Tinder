@@ -3,6 +3,8 @@ const connectDB = require("./config/database");
 const app = express();
 const User = require("./models/user");
 
+User.syncIndexes();
+
 // connect to database
 connectDB()
   .then(() => {
@@ -25,7 +27,7 @@ app.post("/signup", async (req, res) => {
     await user.save();
     res.send("User added successfully");
   } catch (err) {
-    res.status(400).send("Error saving the data ", err.message);
+    res.status(400).send("Error saving the data " + err.message);
   }
 });
 
@@ -60,6 +62,7 @@ app.patch("/user", async (req, res) => {
   try {
     await User.findByIdAndUpdate(userId, data, {
       returnDocument: "after",
+      runValidators: "true",
     });
     res.send("User data updated successfully.");
   } catch (error) {
