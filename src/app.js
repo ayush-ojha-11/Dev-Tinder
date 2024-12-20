@@ -4,6 +4,7 @@ const app = express();
 const User = require("./models/user");
 const validation = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
 
 User.syncIndexes();
 
@@ -22,6 +23,9 @@ connectDB()
 
 // using express.json to read JSON data from request for all routes
 app.use(express.json());
+
+//miidleware to read cookiesnp
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
   try {
