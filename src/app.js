@@ -55,14 +55,14 @@ app.delete("/user", async (req, res) => {
 
 // update API - update data of user
 
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params?.userId;
   const data = req.body;
 
   try {
     await User.findByIdAndUpdate(userId, data, {
       returnDocument: "after",
-      runValidators: "true",
+      runValidators: "truen",
     });
     res.send("User data updated successfully.");
   } catch (error) {
