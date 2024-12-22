@@ -5,6 +5,7 @@ const User = require("./models/user");
 const validation = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 User.syncIndexes();
 
