@@ -5,7 +5,6 @@ const User = require("./models/user");
 const validation = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
 const { userAuth } = require("./middlewares/auth");
 
 User.syncIndexes();
@@ -65,13 +64,12 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("Invalid Credentials!");
     }
-    // if the email is present, validate the password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    // if the email is present, validate the password (using the schema level function)
+    const isPasswordValid = await user.validatePassword(password);
     if (isPasswordValid) {
       // Creating a JWT token (hiding the userId in the token)
-      const token = await jwt.sign({ _id: user._id }, "DEV@TINDER@79", {
-        expiresIn: "4d",
-      });
+      // schema level function getJWT
+      const token = await user.getJWT();
 
       // Add the token to the cookie and send response to the user
       res.cookie("token", token);
