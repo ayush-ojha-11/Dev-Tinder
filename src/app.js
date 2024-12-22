@@ -104,11 +104,35 @@ app.post("/login", async (req, res) => {
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (isPasswordValid) {
+      // Creating a JWT token (hiding the userId in the token)
+      const token = await jwt.sign({ _id: user._id }, "DEV@TINDER@79");
+      console.log(token);
+
+      // Add the token to the cookie and send response to the user
+      res.cookie("token", token);
       res.send("Login Successful.");
     } else {
       throw new Error("Invalid Credentials!");
     }
   } catch (error) {
     res.status(400).send("ERROR: " + error.message);
+  }
+});
+
+//Profile API
+
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req.cookies;
+    const { token } = cookies;
+
+    //Validate the token
+    const decodedMessage = await jwt.verify(token, "DEV@TINDER@79");
+    const { _id } = decodedMessage;
+
+    const user = await User.findById(_id);
+    res.send(user);
+  } catch (error) {
+    res.status(400).send("Error getting the profile: " + error.message);
   }
 });
