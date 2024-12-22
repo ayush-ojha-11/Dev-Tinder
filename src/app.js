@@ -6,6 +6,7 @@ const validation = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth");
 
 User.syncIndexes();
 
@@ -28,6 +29,7 @@ app.use(express.json());
 //miidleware to read cookiesnp
 app.use(cookieParser());
 
+// Sign up API
 app.post("/signup", async (req, res) => {
   try {
     //Validation of data
@@ -52,61 +54,22 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-// feed api - GET all users from the database
-app.get("/feed", async (req, res) => {
-  try {
-    const users = await User.find({});
-    res.send(users);
-  } catch (err) {
-    res.status(400).send("Something went wrong!");
-  }
-});
-
-// delete API - to delete a user from the database
-
-app.delete("/user", async (req, res) => {
-  const userId = req.body.userId;
-  try {
-    const user = await User.findByIdAndDelete({ _id: userId });
-    res.send("User deleted successfully.");
-  } catch (error) {
-    res.status(400).send("Error in deleting the user!");
-  }
-});
-
-// update API - update data of user
-
-app.patch("/user/:userId", async (req, res) => {
-  const userId = req.params?.userId;
-  const data = req.body;
-
-  try {
-    await User.findByIdAndUpdate(userId, data, {
-      returnDocument: "after",
-      runValidators: "truen",
-    });
-    res.send("User data updated successfully.");
-  } catch (error) {
-    res.status(400).send("Error in updating the user data!");
-  }
-});
-
 //login API
-
 app.post("/login", async (req, res) => {
   try {
     const { emailId, password } = req.body;
 
+    // Validate whether email is present in the database or not
     const user = await User.findOne({ emailId });
 
     if (!user) {
       throw new Error("Invalid Credentials!");
     }
+    // if the email is present, validate the password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (isPasswordValid) {
       // Creating a JWT token (hiding the userId in the token)
       const token = await jwt.sign({ _id: user._id }, "DEV@TINDER@79");
-      console.log(token);
 
       // Add the token to the cookie and send response to the user
       res.cookie("token", token);
@@ -120,17 +83,9 @@ app.post("/login", async (req, res) => {
 });
 
 //Profile API
-
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-    const { token } = cookies;
-
-    //Validate the token
-    const decodedMessage = await jwt.verify(token, "DEV@TINDER@79");
-    const { _id } = decodedMessage;
-
-    const user = await User.findById(_id);
+    const user = req.user;
     res.send(user);
   } catch (error) {
     res.status(400).send("Error getting the profile: " + error.message);
