@@ -22,6 +22,13 @@ requestRouter.post(
         throw new Error("Invalid Status type!");
       }
 
+      // if toUserId is valid
+
+      const toUser = await User.findById(toUserId);
+      if (!toUser) {
+        return res.status(404).send({ message: "User not found!" });
+      }
+
       // check if already a request exits or not
 
       const existingConnectionRequest = await ConnectionRequest.findOne({
