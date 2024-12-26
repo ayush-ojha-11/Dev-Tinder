@@ -3,6 +3,7 @@ const connectDB = require("./config/database");
 const User = require("./models/user");
 const app = express();
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 // routers
 const authRouter = require("./routes/auth");
@@ -24,7 +25,13 @@ connectDB()
   .catch((err) => {
     console.error("Database connection failed!");
   });
-
+// to avoid cors error
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 // using express.json to read JSON data from request for all routes
 app.use(express.json());
 
