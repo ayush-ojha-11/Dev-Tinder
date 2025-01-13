@@ -62,7 +62,8 @@ const userSchema = new mongoose.Schema(
     photoUrl: {
       type: String,
       trim: true,
-      default: "",
+      default:
+        "https://centrechurch.org/wp-content/uploads/2022/03/img-person-placeholder.jpeg",
     },
     about: {
       type: String,
@@ -94,6 +95,3 @@ userSchema.methods.validatePassword = async function (passwordInputByUser) {
   return isPasswordValid;
 };
 module.exports = mongoose.model("User", userSchema);
-
-
-

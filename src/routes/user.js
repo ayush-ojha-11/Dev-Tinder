@@ -46,8 +46,6 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
       return row.fromUserId;
     });
 
-    console.log(up_data);
-
     res.json({
       message: "Connection data retrieved successfully.",
       data: up_data,
