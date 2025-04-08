@@ -19,7 +19,7 @@ connectDB()
     console.log("Connected to Database successfully.");
     // start listening to server once database is connected successfully
     app.listen(7099, () => {
-      console.log("Server is successfully running on port 7099");
+      console.log("Server is successfully running on the port 7099");
     });
   })
   .catch((err) => {
